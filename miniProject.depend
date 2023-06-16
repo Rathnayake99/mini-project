@@ -5,3 +5,10 @@
 	<string.h>
 	<stdbool.h>
 
+1686911121 source:c:\users\saman\desktop\mini_project\mini-project\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<stdbool.h>
+	<windows.h>
+
