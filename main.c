@@ -14,12 +14,11 @@ struct node {
     struct node *next;
 };
 
-struct node *head = NULL;
-struct node *tail = NULL;
-struct node *temp = NULL;
-int count = 0;
+struct node *head = 0;
+struct node *tail = 0;
+struct node *temp = 0;
 
-void newNode(int code,char name[],char vType[],int hours,float price){
+struct node * newNode(int code,char name[],char vType[],int hours,float price){
     struct node *node = (struct node *)malloc(sizeof(struct node));
     node->code = code;
     strcpy(node->name, name);
@@ -28,77 +27,63 @@ void newNode(int code,char name[],char vType[],int hours,float price){
     node->price = price;
     node->toatal = hours*price;
     node->next = 0;
-    head = tail = node;
-    count = 1;
-
+    return node;
 }
 
-void insertNext(int code, char name[],char vType[],int hours,float price){
-    struct node *node = (struct node *)malloc(sizeof(struct node));
-    node->code = code;
-    strcpy(node->name, name);
-    strcpy(node->vType, vType);
-    node->hours = hours;
-    node->price = price;
-    node->toatal = hours*price;
-    node->next = 0;
-    temp = node;
-    tail->next = temp;
-    tail = temp;
-    count++;
+void insertNext(int code, struct node *node){
+    temp = head;
+    if(head==0){
+        head=tail=node;
+    }else{
+        while(temp->code!=code&&temp->next!=0){
+            temp = temp->next;
+        }
+        if(temp->code==code){
+                if(tail==temp){
+                    tail==node;
+                }
+            node->next=temp->next;
+            temp->next=node;
+        }else{
+            node->next=head;
+            head=node;
+        }
+    }
 }
 
-void insertFront(int code, char name[],char vType[],int hours,float price){
-    struct node *node = (struct node *)malloc(sizeof(struct node));
-    node->code = code;
-    strcpy(node->name, name);
-    strcpy(node->vType, vType);
-    node->hours = hours;
-    node->price = price;
-    node->toatal = hours*price;
-    node->next = 0;
+void insertFront(struct node *node){
     temp = node;
-         if(head==NULL){
+         if(head==0){
             head =tail = temp;
-            count = 1;
          }else{
              temp->next = head;
              head = temp;
-             count++;
          }
-};
+}
 
-void insertRear(int code, char name[],char vType[],int hours,float price){
-    struct node *node = (struct node *)malloc(sizeof(struct node));
-    node->code = code;
-    strcpy(node->name, name);
-    strcpy(node->vType, vType);
-    node->hours = hours;
-    node->price = price;
-    node->toatal = hours*price;
-    node->next = 0;
+void insertRear(struct node *node){
     temp = node;
-         if(head==NULL){
+         if(head==0){
             head =tail = temp;
-            count = 1;
          }else{
          tail->next = temp;
          tail = temp;
-         count++;
          }
-};
+}
 
 void Search(int code){
     temp = head;
     int i = 0;
-    while(count>i){
+    while(temp->next!=0){
         if(temp->code==code){
+            break;
+        }
+        temp = temp->next;
+    }
+    if(temp->code==code){
             printf("%d  %s   %s   %d  %.2f  %.2f\n",temp->code,temp->name,temp->vType,temp->hours,temp->price,temp->toatal);
             return;
         }
-        temp = temp->next;
-        i++;
-    }
     printf("\nThis code is not exist...\n");
 }
 
@@ -109,12 +94,13 @@ void deleteNode(int code){
         if(temp->code==code){
             if(prev==0){
                 head = temp->next;
-                count--;
                 printf("\nDeleted...\n");
                 return;
             }
             prev->next = temp->next;
-            count--;
+            if(tail==temp){
+                tail=prev;
+            }
             printf("\nDeleted...\n");
             return;
         }
@@ -124,24 +110,38 @@ void deleteNode(int code){
     printf("\nThis code is not exist...");
     return;
 }
-
-void display(int count){
+void changeHours(int newHours,int code){
     temp = head;
-    if(count==0){
-        printf("Empty list\n");
-        return;
+    while(temp!=0){
+        if(temp->code==code){
+            temp->hours=newHours;
+            temp->toatal=newHours*temp->price;
+            printf("\nUpdated..");
+            return;
+        }
+        temp=temp->next;
     }
-    for(int i =0;i<count;i++){
+    printf("\nThis code is not exist...");
+
+}
+
+void display(){
+    temp = head;
+    if(head==0){
+        printf("Empty list\n");
+    }else{
+        while(temp!=0){
         printf("%d  %s   %s   %d  %.2f  %.2f\n",temp->code,temp->name,temp->vType,temp->hours,temp->price,temp->toatal);
         temp = temp->next;
+      }
+
     }
-    return;
-};
+}
 
 int main()
 {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);  //color changer
-    int manu,code,hours;
+    int manu,code,hours,position,newHours;
     float price,total;
     char name[45];
     char vType[45];
@@ -153,81 +153,64 @@ int main()
 
     while(program){
 
-   printf("\nCreate new Node        press 1: \n");
-   printf("Insert Node            press 2: \n");
-   printf("Insert Node to front   press 3: \n");
-   printf("Create Node to rear    press 4: \n");
-   printf("Search Node using code press 5: \n");
-   printf("Delete Node using code press 6: \n");
-   printf("Display all Node       press 7: \n");
-   printf("Exist the program      press 8: \n");
-
+   printf("\nInsert next vehicle(Node)       press 1: \n");
+   printf("Insert vehicle to front         press 2: \n");
+   printf("Create vehicle to rear          press 3: \n");
+   printf("Search vehicle using code       press 4: \n");
+   printf("Delete vehicle using code       press 5: \n");
+   printf("Display all vehicle             press 6: \n");
+   printf("Change hours in vehicle         press 7: \n");
+   printf("Exist the program               press 8: \n");
    scanf("%d", &manu);
 
-
     switch(manu){
-
      case 1:
-        printf("Enter code:");      scanf("%d",&code);
-        printf("Enter name:");      scanf("%s",&name);
-        printf("Enter vehicle type:");      scanf("%s",&vType);
-        printf("Enter hours:");  scanf("%d",&hours);
-        printf("Enter price:");     scanf("%f",&price);
-
-        newNode(code,name,vType,hours,price);
-
+         printf("Enter position(code):");      scanf("%d",&position);   //after position park new car...
+         printf("Enter vehicle code:");      scanf("%d",&code);
+         printf("Enter name:");      scanf("%s",&name);
+         printf("Enter vehicle type:");      scanf("%s",&vType);
+         printf("Enter hours:");  scanf("%d",&hours);
+         printf("Enter price:");     scanf("%f",&price);
+         insertNext(position,newNode(code,name,vType,hours,price));
         break;
 
      case 2:
-         if(head==NULL){
-           printf("List is empty. first insert new Node...\n");
-           break;
-         }
-         printf("Enter code:");      scanf("%d",&code);
+         printf("Enter vehicle code:");      scanf("%d",&code);
          printf("Enter name:");      scanf("%s",&name);
-         printf("Enter v-number:");      scanf("%s",&vType);
+         printf("Enter vehicle type:");      scanf("%s",&vType);
          printf("Enter hours:");  scanf("%d",&hours);
          printf("Enter price:");     scanf("%f",&price);
-
-         insertNext(code,name,vType,hours,price);
-
+         insertFront(newNode(code,name,vType,hours,price));
          break;
 
      case 3:
-         printf("Enter code:");      scanf("%d",&code);
+         printf("Enter vehicle code:");      scanf("%d",&code);
          printf("Enter name:");      scanf("%s",&name);
-         printf("Enter v-number:");      scanf("%s",&vType);
+         printf("Enter vehicle type:");      scanf("%s",&vType);
          printf("Enter hours:");  scanf("%d",&hours);
          printf("Enter price:");     scanf("%f",&price);
-
-         insertFront(code,name,vType,hours,price);
-        break;
+         insertRear(newNode(code,name,vType,hours,price));
+         break;
 
      case 4:
-         printf("Enter code:");      scanf("%d",&code);
-         printf("Enter name:");      scanf("%s",&name);
-         printf("Enter v-number:");      scanf("%s",&vType);
-         printf("Enter hours:");  scanf("%d",&hours);
-         printf("Enter price:");     scanf("%f",&price);
-
-         insertRear(code,name,vType,hours,price);
-
-        break;
-
-     case 5:
-         printf("Enter code:");
+         printf("Enter vehicle code:");
          scanf("%d",&code);
          Search(code);
          break;
 
-     case 6:
-         printf("Enter code:");      scanf("%d",&code);
-
+     case 5:
+         printf("Enter vehicle code:");      scanf("%d",&code);
          deleteNode(code);
          break;
 
+     case 6:
+         display();
+         break;
+
      case 7:
-         display(count);
+         printf("Enter vehicle code:");      scanf("%d",&code);
+         printf("Enter new Hours:");      scanf("%d",&newHours);
+         changeHours(newHours,code);
          break;
 
      case 8:
